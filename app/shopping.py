@@ -16,7 +16,22 @@ def format_usd(my_price):
     '''
     return f"${my_price:,.2f}"
 
-if __name__ == "__main__":
+#function almost entirely stolen from Prof Rossetti's in class
+def find_product(product_num, product_list):
+    '''
+    Parameters:
+    product num as a string (eg: "2")
+    product_list as a list of dicts
+
+    Returns: that product's dictionary (if it exists)
+    '''
+    matching_products = [p for p in product_list if str(p["id"]) == str(product_num)]
+    if any(matching_products):
+        return matching_products[0]
+    else:
+        return None
+
+if __name__ == '__main__':
 
     # READ INVENTORY OF PRODUCTS
 
@@ -32,9 +47,9 @@ if __name__ == "__main__":
         if selected_id.upper() == "DONE":
             break
         else:
-            matching_products = [p for p in products if str(p["id"]) == str(selected_id)]
-            if any(matching_products):
-                selected_products.append(matching_products[0])
+            matching_product = find_product(selected_id, products)
+            if matching_product:
+                selected_products.append(matching_product)
             else:
                 print("OOPS, Couldn't find that product. Please try again.")
 
@@ -44,6 +59,8 @@ if __name__ == "__main__":
 
     # PRINT RECEIPT
 
+    TAXRATE = .0875
+
     print("---------")
     print("CHECKOUT AT: " + str(checkout_at.strftime("%Y-%M-%d %H:%m:%S")))
     print("---------")
@@ -52,8 +69,8 @@ if __name__ == "__main__":
 
     print("---------")
     print(f"SUBTOTAL: {format_usd(subtotal)}")
-    print(f"TAX: {format_usd(subtotal * 0.0875)}")
-    print(f"TOTAL: {format_usd(subtotal * 0.0875 + subtotal)}")
+    print(f"TAX: {format_usd(subtotal * TAXRATE)}")
+    print(f"TOTAL: {format_usd(subtotal * TAXRATE + subtotal)}")
     print("---------")
     print("THANK YOU! PLEASE COME AGAIN SOON!")
     print("---------")
@@ -66,15 +83,12 @@ if __name__ == "__main__":
     with open(receipt_filepath, "w") as receipt_file:
         receipt_file.write("------------------------------------------")
         for p in selected_products:
-            receipt_file.write("\nSELECTED PRODUCT: " + p["name"] + "   " + '${:.0f}'.format(p["price"]))
+            receipt_file.write("\nSELECTED PRODUCT: " + p["name"] + "   " + format_usd(p["price"]))
 
         receipt_file.write("\n---------")
         receipt_file.write(f"\nSUBTOTAL: {subtotal}")
-        receipt_file.write(f"\nTAX: {subtotal * 0.875}")
-        receipt_file.write(f"\nTOTAL: {((subtotal * 0.875) + subtotal)}")
+        receipt_file.write(f"\nTAX: {format_usd(subtotal * TAXRATE)}")
+        receipt_file.write(f"\nTOTAL: {format_usd((subtotal * TAXRATE) + subtotal)}")
         receipt_file.write("\n---------")
         receipt_file.write("\nTHANK YOU! PLEASE COME AGAIN SOON!")
         receipt_file.write("\n---------")
-
-
-    format_usd()
