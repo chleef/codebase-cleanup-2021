@@ -14,6 +14,7 @@ def test_format_usd():
 #should return that product's dictionary
 #also test invalid result - should return None
 
+
 mock_filepath = os.path.join(os.path.dirname(__file__), "mock_data", "mock_products.csv")
 mock_df = read_csv(mock_filepath)
 mock_products = mock_df.to_dict("records")
